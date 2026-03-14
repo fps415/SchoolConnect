@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SchoolConnect - Upcoming Tests</title>
+  <style>
+    /* Navigation Bar */
+    nav {
+      background-color: #4a6cff;
+      padding: 12px 0;
+    }
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+    nav li {
+      margin: 0 15px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 8px 12px;
+    }
+    nav a:hover {
+      background-color: #2f4bd1;
+      border-radius: 5px;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f6ff;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 30px;
+      color: #333;
+    }
+
+    /* Container */
+    .container {
+      width: 90%;
+      max-width: 700px;
+      margin: 20px auto 50px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+
+    #save-btn {
+      margin-top: 10px;
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #4a6cff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #save-btn:hover {
+      background-color: #2f4bd1;
+    }
+
+    .saved-tests {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .test-item {
+      background-color: #dfe4ff;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      word-break: break-word;
+    }
+
+    .task-text {
+      white-space: pre-wrap;
+      margin-bottom: 8px;
+    }
+
+    .test-buttons {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .test-buttons button {
+      margin-left: 5px;
+      padding: 5px 8px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .edit-btn {
+      background-color: #ffb74a;
+      color: white;
+    }
+    .edit-btn:hover {
+      background-color: #e59423;
+    }
+    .delete-btn {
+      background-color: #ff6b6b;
+      color: white;
+    }
+    .delete-btn:hover {
+      background-color: #e03e3e;
+    }
+    .save-edit-btn {
+      background-color: #4a6cff;
+      color: white;
+      margin-left: 5px;
+    }
+    .save-edit-btn:hover {
+      background-color: #2f4bd1;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <ul>
+    <li><a href="schoolconnect.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="features.html">Features</a></li>
+    <li><a href="calendar.html">Calendar</a></li>
+    <li><a href="todolist.html">To-Do List</a></li>
+    <li><a href="login.html">Login</a></li>
+    <li><a href="signup.html">Sign Up</a></li>
+  </ul>
+</nav>
+
+<h1>Upcoming Tests</h1>
+
+<div class="container">
+  <textarea id="test-input" placeholder="Type your test questions here..."></textarea>
+  <button id="save-btn">Save</button>
+
+  <div class="saved-tests" id="saved-tests"></div>
+</div>
+
+<script>
+  const saveBtn = document.getElementById('save-btn');
+  const testInput = document.getElementById('test-input');
+  const savedTests = document.getElementById('saved-tests');
+
+  function createTestItem(text) {
+    const testItem = document.createElement('div');
+    testItem.className = 'test-item';
+
+    const taskText = document.createElement('div');
+    taskText.className = 'task-text';
+    taskText.textContent = text;
+
+    const buttons = document.createElement('div');
+    buttons.className = 'test-buttons';
+
+    // Edit Button
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-btn';
+    editBtn.textContent = 'Edit';
+    editBtn.onclick = () => {
+      // Replace text div with textarea for editing
+      const editArea = document.createElement('textarea');
+      editArea.value = taskText.textContent;
+      editArea.style.width = '100%';
+      editArea.style.minHeight = '80px';
+      testItem.insertBefore(editArea, taskText);
+      testItem.removeChild(taskText);
+
+      // Replace Edit button with Save button
+      const saveEditBtn = document.createElement('button');
+      saveEditBtn.className = 'save-edit-btn';
+      saveEditBtn.textContent = 'Save';
+      saveEditBtn.onclick = () => {
+        taskText.textContent = editArea.value;
+        testItem.insertBefore(taskText, editArea);
+        testItem.removeChild(editArea);
+        buttons.removeChild(saveEditBtn);
+        buttons.appendChild(editBtn);
+      };
+
+      buttons.removeChild(editBtn);
+      buttons.appendChild(saveEditBtn);
+    };
+
+    // Delete Button
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.onclick = () => testItem.remove();
+
+    buttons.appendChild(editBtn);
+    buttons.appendChild(deleteBtn);
+
+    testItem.appendChild(taskText);
+    testItem.appendChild(buttons);
+
+    return testItem;
+  }
+
+  saveBtn.onclick = () => {
+    const text = testInput.value.trim();
+    if (text !== '') {
+      const testItem = createTestItem(text);
+      savedTests.appendChild(testItem);
+      testInput.value = '';
+    }
+  }
+
+  testInput.addEventListener('keypress', (e) => {
+    if(e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      saveBtn.onclick();
+    }
+  });
+</script>
+
+</body>
+</html>

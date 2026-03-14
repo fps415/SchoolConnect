@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SchoolConnect - Calendar</title>
+<style>
+/* Navigation Bar */
+nav {
+  background-color: #4a6cff;
+  padding: 12px 0;
+}
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+nav li {
+  margin: 0 15px;
+}
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 8px 12px;
+}
+nav a:hover {
+  background-color: #2f4bd1;
+  border-radius: 5px;
+}
+
+/* General Page Style */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f6ff;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+h1 {
+  margin-top: 30px;
+  color: #333;
+}
+
+/* Month Scroller */
+.months {
+  display: flex;
+  overflow-x: auto;
+  margin: 20px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ccc;
+}
+.months div {
+  min-width: 100px;
+  padding: 8px 15px;
+  margin: 0 5px;
+  background-color: #4a6cff;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  text-align: center;
+  font-weight: bold;
+}
+.months div.active {
+  background-color: #2f4bd1;
+}
+
+/* Calendar Grid */
+.calendar-container {
+  width: 90%;
+  max-width: 700px;
+  margin: 20px auto 50px auto;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+.day {
+  background-color: white;
+  padding: 10px 5px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  position: relative;
+  min-height: 60px;
+  text-align: left;
+}
+.day:hover {
+  background-color: #e1e7ff;
+}
+
+/* Task Popup */
+.task-popup {
+  display: none;
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  max-width: 250px;
+  background: #f9f9f9;
+  border: 1px solid #4a6cff;
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 10;
+}
+.task-popup textarea {
+  width: 100%;
+  height: 80px;
+  resize: none;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 5px;
+}
+.task-popup button {
+  margin-top: 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #4a6cff;
+  color: white;
+  cursor: pointer;
+}
+.task-popup button:hover {
+  background-color: #2f4bd1;
+}
+
+/* Display saved tasks */
+.task-list {
+  margin-top: 5px;
+  font-size: 14px;
+  max-height: 100px;
+  overflow-y: auto;
+}
+.task-item {
+  background-color: #dfe4ff;
+  border-radius: 4px;
+  margin-bottom: 3px;
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  word-break: break-word;
+}
+.task-item.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+.task-item input[type="checkbox"] {
+  margin-right: 6px;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <ul>
+    <li><a href="schoolconnect.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="features.html">Features</a></li>
+    <li><a href="calendar.html">Calendar</a></li>
+    <li><a href="list.html">To-Do list</a></li>
+    <li><a href="login.html">Login</a></li>
+    <li><a href="signup.html">Sign Up</a></li>
+  </ul>
+</nav>
+
+<h1>Homework Calendar</h1>
+
+<div class="months" id="months"></div>
+<div class="calendar-container" id="calendar"></div>
+
+<script>
+const monthsData = [
+  {name:"January", days:31}, {name:"February", days:28}, {name:"March", days:31},
+  {name:"April", days:30}, {name:"May", days:31}, {name:"June", days:30},
+  {name:"July", days:31}, {name:"August", days:31}, {name:"September", days:30},
+  {name:"October", days:31}, {name:"November", days:30}, {name:"December", days:31}
+];
+
+const monthsContainer = document.getElementById('months');
+const calendar = document.getElementById('calendar');
+
+let activeMonthIndex = 0;
+
+function renderMonths() {
+  monthsContainer.innerHTML = '';
+  monthsData.forEach((month, i) => {
+    const div = document.createElement('div');
+    div.textContent = month.name;
+    div.className = i === activeMonthIndex ? 'active' : '';
+    div.onclick = () => {
+      activeMonthIndex = i;
+      renderMonths();
+      renderCalendar();
+    };
+    monthsContainer.appendChild(div);
+  });
+}
+
+function renderCalendar() {
+  calendar.innerHTML = '';
+  const daysInMonth = monthsData[activeMonthIndex].days;
+  for(let i=1; i<=daysInMonth; i++){
+    const day = document.createElement('div');
+    day.className = 'day';
+    day.textContent = i;
+
+    const taskList = document.createElement('div');
+    taskList.className = 'task-list';
+    day.appendChild(taskList);
+
+    // Task popup
+    const popup = document.createElement('div');
+    popup.className = 'task-popup';
+    const textarea = document.createElement('textarea');
+    textarea.placeholder = 'Type your homework/task...';
+    textarea.onclick = (e) => e.stopPropagation();
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = 'Save';
+    saveBtn.onclick = (e) => {
+      const text = textarea.value.trim();
+      if(text !== ''){
+        const item = document.createElement('div');
+        item.className = 'task-item';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.onchange = () => {
+          item.classList.toggle('completed', checkbox.checked);
+        };
+
+        const span = document.createElement('span');
+        span.textContent = text;
+
+        item.appendChild(checkbox);
+        item.appendChild(span);
+        taskList.appendChild(item);
+
+        textarea.value = '';
+        popup.style.display = 'none';
+      }
+      e.stopPropagation();
+    };
+    popup.appendChild(textarea);
+    popup.appendChild(saveBtn);
+    day.appendChild(popup);
+
+    day.onclick = (e) => {
+      popup.style.display = (popup.style.display === 'block') ? 'none' : 'block';
+      e.stopPropagation();
+    }
+
+    calendar.appendChild(day);
+  }
+}
+
+document.addEventListener('click', () => {
+  document.querySelectorAll('.task-popup').forEach(p => p.style.display = 'none');
+});
+
+renderMonths();
+renderCalendar();
+</script>
+
+</body>
+</html>

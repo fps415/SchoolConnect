@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SchoolConnect - Notes</title>
+<style>
+/* -------- Navigation Bar -------- */
+nav {
+  background-color: #4a6cff;
+  padding: 12px 0;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+nav li {
+  margin: 0 15px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 8px 12px;
+}
+
+nav a:hover {
+  background-color: #2f4bd1;
+  border-radius: 5px;
+}
+
+/* -------- General Page Style -------- */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f6ff;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+/* -------- Notes Editor Container -------- */
+.editor-container {
+  width: 90%;
+  max-width: 700px;
+  margin: 50px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.editor-container h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* -------- Textarea -------- */
+textarea {
+  width: 95%;
+  min-height: 250px; /* Big typing area */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  font-size: 16px;
+  line-height: 1.5;
+  resize: vertical;
+  white-space: pre-wrap; /* wrap long lines */
+}
+
+/* -------- Buttons -------- */
+button {
+  margin: 10px 5px 20px 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #4a6cff;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background-color: #2f4bd1;
+}
+
+/* -------- Saved Notes -------- */
+.saved-note-container {
+  width: 95%;
+  margin: 20px auto;
+  text-align: center;
+}
+
+.saved-note {
+  width: 100%;
+  min-height: 250px; /* same as typing area */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  font-size: 16px;
+  line-height: 1.5;
+  white-space: pre-wrap; /* preserve line breaks */
+  margin-bottom: 20px;
+  background-color: #f2f6ff;
+  resize: none;
+  overflow-y: auto;
+}
+
+.note-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.note-buttons button {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Navigation Bar -->
+<nav>
+  <ul>
+    <li><a href="Connect.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="features.html">Features</a></li>
+    <li><a href="calendar.html">Calendar</a></li>
+    <li><a href="list.html">To-Do list</a></li>
+    <li><a href="login.html">Login</a></li>
+    <li><a href="signup.html">Sign Up</a></li>
+  </ul>
+</nav>
+
+<!-- Notes Editor -->
+<div class="editor-container">
+  <h1>Notes</h1>
+  <textarea id="note-area" placeholder="Type your notes here..."></textarea><br>
+  <button onclick="saveNote()">Save</button>
+  <button onclick="shareNote()">Share</button>
+</div>
+
+<!-- Saved Notes -->
+<div id="saved-notes-container" class="saved-note-container"></div>
+
+<script>
+let notesArray = [];
+
+function saveNote() {
+  const noteText = document.getElementById('note-area').value.trim();
+  if(noteText === '') {
+    alert("Cannot save empty note!");
+    return;
+  }
+
+  notesArray.push(noteText);
+  renderNotes();
+  document.getElementById('note-area').value = ''; // clear textarea
+}
+
+function shareNote() {
+  const noteText = document.getElementById('note-area').value.trim();
+  if(noteText === '') {
+    alert("Nothing to share!");
+    return;
+  }
+  navigator.clipboard.writeText(noteText).then(() => {
+    alert("Note copied! You can paste it anywhere.");
+  });
+}
+
+function renderNotes() {
+  const container = document.getElementById('saved-notes-container');
+  container.innerHTML = ''; // clear previous
+
+  if(notesArray.length > 0){
+    const heading = document.createElement('h2');
+    heading.textContent = "Saved Notes";
+    heading.style.textAlign = "center";
+    container.appendChild(heading);
+  }
+
+  notesArray.forEach((note, index) => {
+    const noteWrapper = document.createElement('div');
+
+    // Create saved note (big block, same size as textarea)
+    const savedNote = document.createElement('textarea');
+    savedNote.className = 'saved-note';
+    savedNote.value = note;
+    savedNote.readOnly = true; // cannot edit unless Edit is pressed
+
+    // Create buttons
+    const btnContainer = document.createElement('div');
+    btnContainer.className = 'note-buttons';
+
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
+    editBtn.onclick = function() {
+      const newText = prompt("Edit your note:", note);
+      if(newText !== null && newText.trim() !== '') {
+        notesArray[index] = newText;
+        renderNotes();
+      }
+    };
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.onclick = function() {
+      notesArray.splice(index, 1);
+      renderNotes();
+    };
+
+    btnContainer.appendChild(editBtn);
+    btnContainer.appendChild(deleteBtn);
+
+    noteWrapper.appendChild(savedNote);
+    noteWrapper.appendChild(btnContainer);
+    container.appendChild(noteWrapper);
+  });
+}
+</script>
+
+</body>
+</html>

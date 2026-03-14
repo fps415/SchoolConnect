@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>SchoolConnect - Homework Reminder</title>
+<style>
+/* -------- Navigation Bar -------- */
+
+nav {
+  background-color: #4a6cff;
+  padding: 12px 0;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+nav li {
+  margin: 0 15px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 8px 12px;
+}
+
+nav a:hover {
+  background-color: #2f4bd1;
+  border-radius: 5px;
+}
+
+/* -------- General Page Style -------- */
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f6ff;
+  margin: 0;
+  padding: 0;
+  text-align: center; /* All text centered */
+}
+
+/* -------- Homework Reminder Container -------- */
+
+.homework-container {
+  width: 90%;
+  max-width: 600px;
+  margin: 50px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.homework-container h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+#homework-list {
+  list-style: none;
+  padding: 0;
+}
+
+#homework-list li {
+  background: #f2f6ff;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#homework-list li.done {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.homework-container input[type="text"] {
+  width: 70%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+}
+
+.homework-container button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #4a6cff;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.homework-container button:hover {
+  background-color: #2f4bd1;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Navigation Bar -->
+<nav>
+  <ul>
+    <li><a href="Connect.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="features.html">Features</a></li>
+    <li><a href="calendar.html">Calendar</a></li>
+    <li><a href="list.html">To-Do list</a></li>
+    <li><a href="login.html">Login</a></li>
+    <li><a href="signup.html">Sign Up</a></li>
+  </ul>
+</nav>
+
+<!-- Homework Reminder Section -->
+<div class="homework-container">
+
+  <h1>Homework Reminder</h1>
+
+  <input type="text" id="homework-input" placeholder="Add new homework">
+  <button onclick="addHomework()">Add</button>
+
+  <ul id="homework-list"></ul>
+
+</div>
+
+<script>
+// JavaScript to handle homework list
+function addHomework() {
+  const input = document.getElementById('homework-input');
+  const text = input.value.trim();
+  if (text === '') return;
+
+  const li = document.createElement('li');
+  li.textContent = text;
+
+  // Add Done button
+  const doneBtn = document.createElement('button');
+  doneBtn.textContent = 'Done';
+  doneBtn.onclick = function () {
+    li.classList.toggle('done');
+  };
+
+  // Add Delete button
+  const delBtn = document.createElement('button');
+  delBtn.textContent = 'Delete';
+  delBtn.onclick = function () {
+    li.remove();
+  };
+
+  li.appendChild(doneBtn);
+  li.appendChild(delBtn);
+
+  document.getElementById('homework-list').appendChild(li);
+  input.value = '';
+}
+</script>
+
+</body>
+</html>
